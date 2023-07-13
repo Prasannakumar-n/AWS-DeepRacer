@@ -1,0 +1,21 @@
+def reward_function(params):
+    # Read input parameters
+    distance_from_center = params['distance_from_center']
+    track_width = params['track_width']
+
+    # Calculate the center of the track
+    center = track_width / 2.0
+
+    # Set thresholds for the distance from center
+    left_threshold = center - 0.05 * track_width
+    right_threshold = center + 0.05 * track_width
+
+    # Calculate the reward
+    if distance_from_center <= left_threshold or distance_from_center >= right_threshold:
+        # Penalize the model for being off-center
+        reward = 1e-3
+    else:
+        # Encourage the model to stay in the center
+        reward = 1.0
+
+    return reward
