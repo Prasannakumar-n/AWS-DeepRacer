@@ -1,0 +1,49 @@
+def reward_function(params):
+    '''
+    Example of rewarding the car for speed and penalizing for leaving the track
+    '''
+
+    # Read input parameters
+    distance_from_center = params['distance_from_center']
+    track_width = params['track_width']
+    abs_steering = abs(params['steering_angle']) # Only need the absolute steering angle
+    speed = params['speed']
+    all_wheels_on_track = params['all_wheels_on_track']
+    
+    # Calculate 4 markers that are at varying distances away from the center line
+    marker_1 = 0.1 * track_width
+    marker_2 = 0.2 * track_width
+    marker_3 = 0.3 * track_width
+    marker_4 = 0.4 * track_width
+    
+    # Reward for staying close to the center line
+    if distance_from_center <= marker_1:
+        reward = 2.0
+    elif distance_from_center <= marker_2:
+        reward = 1.5
+    elif distance_from_center <= marker_3:
+        reward = 1.0
+    elif distance_from_center <= marker_4:
+        reward = 0.5
+    else:
+        reward = 1e-3  # likely crashed/ close to off track
+
+    # Penalize reward if the car is steering too much
+    ABS_STEERING_THRESHOLD = 25
+    
+    if abs_steering > ABS_STEERING_THRESHOLD:
+        reward *= 0.8
+    
+    # Reward for speed
+    speed_reward = 1.0
+    
+    # Higher reward if the car is going fast and staying on track
+    if all_wheels_on_track and speed > 2:
+        speed_reward = speed / 25.0
+        reward += speed_reward
+    
+    # Penalize for going off track
+    if not all_wheels_on_track:
+        reward -= 1.0
+        
+    return float(reward)
